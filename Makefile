@@ -1,7 +1,7 @@
 TARGET=nautilus_ext.so
 OBJECTS=plugin.o
 
-LIBDIR=/usr/lib
+LIBDIR=/usr/lib64
 WFLAGS=-Wall -pedantic -Wmissing-prototypes
 CFLAGS= $(WFLAGS) -fPIC -g \
 	$(shell pkg-config --cflags libnautilus-extension)
@@ -14,9 +14,14 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS)
 		gcc $(LDFLAGS) $(OBJECTS) -o $(TARGET)
 
+# /usr/lib64/nautilus/extensions-3.0
 install: all
-	mkdir -p $(LIBDIR)/nautilus/extensions-2.0
-	cp $(TARGET) $(LIBDIR)/nautilus/extensions-2.0/
+	test -d $(LIBDIR)/nautilus/extensions-3.0 || sudo mkdir -p $(LIBDIR)/nautilus/extensions-3.0
+	sudo cp $(TARGET) $(LIBDIR)/nautilus/extensions-3.0/
+
+run:
+	-killall nautilus
+	/usr/bin/nautilus --gapplication-service
 
 plugin.o: plugin.c
 	gcc -c $(CFLAGS) plugin.c -o plugin.o
